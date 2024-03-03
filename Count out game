@@ -1,0 +1,141 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct node
+{
+    char data[10];
+    struct node *next;
+};
+struct node *head = NULL;
+
+void insert(char *e)
+{
+    struct node *t;
+    if (head == NULL)
+    {
+        head = (struct node *)malloc(sizeof(struct node));
+        strcpy(head->data, e);
+        head->next = head;
+    }
+    else
+    {
+        t = head;
+        while (t->next != head)
+        {
+            t = t->next;
+        }
+        t->next = (struct node *)malloc(sizeof(struct node));
+        t = t->next;
+        strcpy(t->data, e);
+        t->next = head;
+    }
+}
+
+void delet(char *e)
+{
+    struct node *t, *prev;
+    if (head == NULL)
+    {
+        printf("LIST IS EMPTY\n");
+    }
+    else if (strcmp(head->data, e) == 0 && head->next == head)
+    {
+        free(head);
+        head = NULL;
+    }
+    else if (strcmp(head->data, e) == 0)
+    {
+        t = head;
+        while (t->next != head)
+        {
+            t = t->next;
+        }
+        t->next = head->next;
+        t = head;
+        head = head->next;
+        free(t);
+    }
+    else
+    {
+        t = head;
+        prev = NULL;
+        do
+        {
+            if (strcmp(t->data, e) == 0)
+                break;
+            prev = t;
+            t = t->next;
+        } while (t != head);
+        if (t == head)
+        {
+            printf("NOT FOUND\n");
+        }
+        else
+        {
+            prev->next = t->next;
+            free(t);
+        }
+    }
+}
+
+void disp()
+{
+    struct node *t;
+    if (head == NULL)
+    {
+        printf("NULL");
+    }
+    else
+    {
+        t = head;
+        do
+        {
+            printf("%s ", t->data);
+            t = t->next;
+        } while (t != head);
+    }
+}
+
+void surviver(int count, int interval)
+{
+    int i,j=1;
+    struct node *t;
+    t = head;
+    while (count > 1)
+    {
+        for (i = 1; i < interval; i++)
+        {
+            t = t->next;
+        }
+        printf("\n\n%s ELIMINATED!!!",t->data);
+        delet(t->data);
+        printf("\nLevel %d Survivors: ", j);
+        disp();
+        t = t->next;
+        count--;
+        j++;
+    }
+    printf("\n\nFINAL SURVIVER IS ");
+    disp();
+}
+
+int main()
+{
+    int count, interval, i;
+    char e[10];
+    printf("Enter the count of People:");
+    scanf("%d", &count);
+    for (i = 1; i <= count; i++)
+    {
+        printf("\nEnter the Name %d:", i);
+        scanf("%s", e);
+        insert(e);
+    }
+    printf("\nInitial Survivers: ");
+    disp();
+    printf("\nEnter the interval:");
+    scanf("%d", &interval);
+    surviver(count, interval);
+    return 0;
+}
